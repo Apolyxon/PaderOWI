@@ -150,20 +150,10 @@ class MainActivity : AppCompatActivity() {
 
             val f = File(filesDir, "FilledForm.pdf")
 
-         document.save(f.absolutePath)
+            document.save(f.absolutePath)
 
+            createEmail(f)
 
-            // create new Intent
-            val intent = Intent(Intent.ACTION_VIEW)
-
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            val uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, f)
-            intent.setDataAndType(uri, "application/pdf")
-
-            val pm = getPackageManager()
-            if (intent.resolveActivity(pm) != null) {
-                startActivity(intent)
-            }
             document.close()
         } catch (e: IOException) {
             Log.e("PdfBox-Android-Sample", "Exception thrown while filling form fields", e)
@@ -171,7 +161,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun createEmail(document: PDDocument) {
+    fun createEmail(owiFile: File) {
+        val uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, owiFile)
 
+        val emailIntent = Intent(Intent.ACTION_SEND)
+
+        emailIntent.type = "vnd.android.cursor.dir/email"
+        emailIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+        val to = arrayOf("asd@gmail.com")
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Parkverstoß vom " + getEnteredTatTag() + ", " + getEnteredStrasseAdresse())
+
+        startActivity(Intent.createChooser(emailIntent, "Send email..."))
     }
 }
