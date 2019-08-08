@@ -1,8 +1,6 @@
 package com.example.paderowi
 
-import android.app.PendingIntent.getActivity
 import android.os.Bundle
-import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -24,22 +22,11 @@ import java.io.IOException
 import android.content.Intent
 
 import androidx.core.content.FileProvider
-import android.content.pm.PackageManager
-
-
-
-
-
 
 class MainActivity : AppCompatActivity() {
-    var root: File? = null
     var assetManager: AssetManager? = null
     var pageImage: Bitmap? = null
-    var tv: TextView? = null
 
-
-    private fun onNewPDF() {
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,8 +53,6 @@ class MainActivity : AppCompatActivity() {
     private fun setup() {
         PDFBoxResourceLoader.init(getApplicationContext())
         assetManager = getAssets()
-     //   tv = (TextView) findViewById (R.id.statusTextView);
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -78,6 +63,42 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun getEnteredTatTag(): String {
+        val tv = findViewById (R.id.editTattag) as TextView
+        return tv.text.toString()
+    }
+
+
+    fun getEnteredUhrzeit(): String {
+        val tv = findViewById (R.id.editUhrzeit) as TextView
+        return tv.text.toString()
+    }
+
+    fun getEnteredStrasseAdresse(): String {
+        val tv = findViewById (R.id.editStrasseNr) as TextView
+        return tv.text.toString()
+    }
+
+    fun getEnteredPLZOrt(): String {
+        val tv = findViewById (R.id.editPLZOrt) as TextView
+        return tv.text.toString()
+    }
+
+    fun getEnteredHerstellerFarbe(): String {
+        val tv = findViewById (R.id.editHerstellerFarbe) as TextView
+        return tv.text.toString()
+    }
+
+    fun getEnteredOWI(): String {
+        val tv = findViewById (R.id.editOWI) as TextView
+        return tv.text.toString()
+    }
+
+    fun getEnteredKennzeichen(): String {
+        val tv = findViewById (R.id.editKennzeichen) as TextView
+        return tv.text.toString()
     }
 
     /**
@@ -100,16 +121,32 @@ class MainActivity : AppCompatActivity() {
             acroForm.defaultResources.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA)
 
 
-            // Fill the text field
-            val field = acroForm.getField("Text1") as PDTextField
+            val DateField = acroForm.getField("Text7") as PDTextField
+            DateField.value = getEnteredTatTag()
 
-            field.value = "Filled Text Field"
-            // Optional: don't allow this field to be edited
-            field.isReadOnly = true
+            val VonField = acroForm.getField("Text8") as PDTextField
+            VonField.value = getEnteredUhrzeit()
 
-            val checkbox = acroForm.getField("Kontrollkästchen1")
-            (checkbox as PDCheckbox).check()
+            val BisField = acroForm.getField("Text9") as PDTextField
+            BisField.value = getEnteredUhrzeit()
 
+            val StrasseNummerOrt = acroForm.getField("Text10") as PDTextField
+            StrasseNummerOrt.value = getEnteredStrasseAdresse() + ", " + getEnteredPLZOrt()
+
+            val KennzeichenField = acroForm.getField("Text11") as PDTextField
+            KennzeichenField.value = getEnteredKennzeichen()
+
+            val HerstellerFarbeField = acroForm.getField("Text12") as PDTextField
+            HerstellerFarbeField.value = getEnteredHerstellerFarbe()
+
+            val OWIfield = acroForm.getField("Text13") as PDTextField
+            OWIfield.value = getEnteredOWI()
+
+            val checkbox1 = acroForm.getField("Kontrollkästchen1")
+            (checkbox1 as PDCheckbox).check()
+
+            val checkbox2 = acroForm.getField("Kontrollkästchen2")
+            (checkbox2 as PDCheckbox).check()
 
             val f = File(filesDir, "FilledForm.pdf")
 

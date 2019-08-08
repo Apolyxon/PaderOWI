@@ -15,34 +15,80 @@
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="8dp">
-        <EditText
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPostalAddress"
-                android:ems="10"
-                android:id="@+id/editText" tools:layout_editor_absoluteY="141dp" tools:layout_editor_absoluteX="377dp"
-                android:hint="Straße, Hausnr."/>
-        <EditText
+                android:layout_height="wrap_content">
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress"
+                    android:ems="10"
+                    android:id="@+id/editUhrzeit" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="377dp"
+                    android:hint="Uhrzeit"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress"
+                    android:ems="10"
+                    android:id="@+id/editTattag" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="377dp"
+                    android:hint="Tagtag"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName|textPostalAddress"
-                android:ems="10"
-                android:id="@+id/editText4" tools:layout_editor_absoluteY="141dp"
-                tools:layout_editor_absoluteX="377dp" android:hint="PLZ/Ort"/>
-        <EditText
+                android:layout_height="wrap_content">
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName|textPostalAddress"
+                    android:ems="10"
+                    android:id="@+id/editPLZOrt" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="377dp" android:hint="Ort"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress"
+                    android:ems="10"
+                    android:id="@+id/editStrasseNr" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="377dp"
+                    android:hint="Straße, Hausnr."/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/editText2" tools:layout_editor_absoluteY="141dp"
-                tools:layout_editor_absoluteX="214dp" android:hint="Hersteller/Farbe"/>
+                android:layout_height="wrap_content">
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/editKennzeichen" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="-18dp" android:hint="Kennzeichen"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/editHerstellerFarbe" tools:layout_editor_absoluteY="141dp"
+                    tools:layout_editor_absoluteX="214dp" android:hint="Hersteller/Farbe"/>
+        </LinearLayout>
         <EditText
-                android:layout_width="232dp"
+                android:layout_width="423dp"
                 android:layout_height="44dp"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editText3" tools:layout_editor_absoluteY="141dp"
+                android:id="@+id/editOWI" tools:layout_editor_absoluteY="141dp"
                 tools:layout_editor_absoluteX="-18dp" android:hint="Verkehrsordnungswidrigkeit"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/editBehinderung" tools:layout_editor_absoluteY="141dp"
+                tools:layout_editor_absoluteX="-18dp" android:hint="Behinderung/Gefährdung"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
