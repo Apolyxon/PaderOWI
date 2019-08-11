@@ -34,7 +34,7 @@
                     android:ems="10"
                     android:id="@+id/editTattag" tools:layout_editor_absoluteY="141dp"
                     tools:layout_editor_absoluteX="377dp"
-                    android:hint="Tagtag"/>
+                    android:hint="Tattag"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
@@ -88,7 +88,7 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/editBehinderung" tools:layout_editor_absoluteY="141dp"
-                tools:layout_editor_absoluteX="-18dp" android:hint="Behinderung/Gefährdung"/>
+                tools:layout_editor_absoluteX="-18dp" android:hint="Behinderung/Gefährdung (optional)"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

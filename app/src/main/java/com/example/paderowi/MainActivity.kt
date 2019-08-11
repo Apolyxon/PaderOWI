@@ -22,6 +22,15 @@ import java.io.IOException
 import android.content.Intent
 
 import androidx.core.content.FileProvider
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import java.security.AccessController.getContext
+import android.widget.Toast
+import android.content.DialogInterface
+import androidx.appcompat.app.AlertDialog
+
+
+
 
 class MainActivity : AppCompatActivity() {
     var assetManager: AssetManager? = null
@@ -59,10 +68,22 @@ class MainActivity : AppCompatActivity() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+
+        when (item.itemId) {
+            // Respond to the action bar's Up/Home button
+            android.R.id.home -> {
+                super.onBackPressed()
+                return true
+            }
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+
         }
+
+        return super.onOptionsItemSelected(item)
     }
 
     fun getEnteredTatTag(): String {
@@ -101,25 +122,68 @@ class MainActivity : AppCompatActivity() {
         return tv.text.toString()
     }
 
-    /**
-     * Fills in a PDF form and saves the result
-     */
+    fun showPersoenlicheDatenFehlen() {
+        AlertDialog.Builder(this)
+            //set icon
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            //set title
+            .setTitle("Persönliche Daten fehlen")
+            //set message
+            .setMessage("Bitte trage deine persönlichen Daten in den Einstellungen ein.")
+            //set positive button
+            .setNeutralButton("OK", DialogInterface.OnClickListener { dialogInterface, i ->
+                //set what would happen when positive button is clicked
+
+            })
+            .show()
+    }
+
     fun fillForm() {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val nachname = preferences.getString("Nachname", "")
+        val vorname = preferences.getString("Vorname", "")
+        val strasseNr = preferences.getString("StrasseNr", "")
+        val ort = preferences.getString("Ort", "")
+        val email = preferences.getString("Email", "")
+        val telefon = preferences.getString("Telefon", "")
+
+        if (nachname!!.isEmpty() || vorname!!.isEmpty() || strasseNr!!.isEmpty() ||
+            ort!!.isEmpty() || email!!.isEmpty() || telefon!!.isEmpty())
+        {
+            showPersoenlicheDatenFehlen()
+            return
+        }
+        // PDF Creation Abstrahieren? SetAdresse etc.
+
+        // Load the document and get the AcroForm
+        val document = PDDocument.load(assetManager!!.open("Privatanzeigen Formular.pdf"))
+        val docCatalog = document.documentCatalog
+        val acroForm = docCatalog.acroForm
+
+        //   var adobeDefaultAppearanceString = "/Helv 0 Tf 0 g "
+        //    acroForm.setDefaultAppearance(adobeDefaultAppearanceString);
+
+        acroForm.defaultResources.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA)
+
         try {
+            val NachnameField = acroForm.getField("Text1") as PDTextField
+            NachnameField.value = nachname
 
-            // PDF Creation Abstrahieren? SetAdresse etc.
+            val VornameField = acroForm.getField("Text2") as PDTextField
+            VornameField.value = vorname
 
-            // Load the document and get the AcroForm
-            val document = PDDocument.load(assetManager!!.open("Privatanzeigen Formular.pdf"))
-            val docCatalog = document.documentCatalog
-            val acroForm = docCatalog.acroForm
+            val StrasseNrAbsField = acroForm.getField("Text3") as PDTextField
+            StrasseNrAbsField.value = strasseNr
 
-          //   var adobeDefaultAppearanceString = "/Helv 0 Tf 0 g "
+            val OrtAbsField = acroForm.getField("Text4") as PDTextField
+            OrtAbsField.value = ort
 
-            //    acroForm.setDefaultAppearance(adobeDefaultAppearanceString);
+            val EmailField = acroForm.getField("Text5") as PDTextField
+            EmailField.value = email
 
-            acroForm.defaultResources.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA)
-
+            val TelefonField = acroForm.getField("Text6") as PDTextField
+            TelefonField.value = telefon
 
             val DateField = acroForm.getField("Text7") as PDTextField
             DateField.value = getEnteredTatTag()
@@ -147,17 +211,17 @@ class MainActivity : AppCompatActivity() {
 
             val checkbox2 = acroForm.getField("Kontrollkästchen2")
             (checkbox2 as PDCheckbox).check()
-
-            val f = File(filesDir, "FilledForm.pdf")
-
-            document.save(f.absolutePath)
-
-            createEmail(f)
-
-            document.close()
         } catch (e: IOException) {
             Log.e("PdfBox-Android-Sample", "Exception thrown while filling form fields", e)
         }
+
+        val f = File(filesDir, "FilledForm.pdf")
+
+        document.save(f.absolutePath)
+
+        createEmail(f)
+
+        document.close()
 
     }
 
@@ -169,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         emailIntent.type = "vnd.android.cursor.dir/email"
         emailIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
-        val to = arrayOf("asd@gmail.com")
+        val to = arrayOf("boss@paderborn.de")
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Parkverstoß vom " + getEnteredTatTag() + ", " + getEnteredStrasseAdresse())

@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">PaderOWI</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="persoenliche_daten">Persönliche Daten</string>
+
+    <!-- Messages Preferences -->
+    <string name="vorname">Vorname</string>
+    <string name="nachname">Nachname</string>
+    <string name="strasseNr">Straße und Hausnr.</string>
+    <string name="ort">PLZ/Ort</string>
+    <string name="email">E-Mail</string>
+    <string name="telefon">Telefon</string>
+    <string name="reply_title">Telefon</string>
 </resources>
