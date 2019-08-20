@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <root-path name="root" path="." />
     <files-path path="/" name="files" />
     <cache-path name="cache" path="/" />
+    <external-path name="my_images" path="Android/data/${applicationId}/files/Pictures" />
 </paths>

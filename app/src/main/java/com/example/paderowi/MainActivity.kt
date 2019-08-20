@@ -1,5 +1,6 @@
 package com.example.paderowi
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -27,15 +28,27 @@ import androidx.preference.PreferenceManager
 import java.security.AccessController.getContext
 import android.widget.Toast
 import android.content.DialogInterface
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-
-
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
     var assetManager: AssetManager? = null
     var pageImage: Bitmap? = null
-
+    private var imageHolder: ImageView? = null
+    var picture: File? = null
+    private val requestCode = 20
+    var mCurrentPhotoPath : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +56,62 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { fillForm() }
+
+        imageHolder = findViewById(R.id.captured_photo);
+        val capturedImageButton: Button? = findViewById(R.id.photo_button)
+        capturedImageButton?.setOnClickListener{onClickPhoto()}
+    }
+
+    val REQUEST_TAKE_PHOTO = 1
+
+    fun onClickPhoto() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                picture = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+
+                // Continue only if the File was successfully created
+                picture?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                }
+            }
+        }
+    }
+
+    var currentPhotoPath: String = ""
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        var storageDir: File? = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            val bitmap = BitmapFactory.decodeFile(picture!!.absolutePath)
+
+            imageHolder?.setImageBitmap(bitmap)
+        }
     }
 
     override fun onStart() {
@@ -226,17 +295,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun createEmail(owiFile: File) {
-        val uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, owiFile)
+        var uris = ArrayList<Uri>();
 
-        val emailIntent = Intent(Intent.ACTION_SEND)
+        val fileURI = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, owiFile)
+        uris.add(fileURI)
 
+        if (imageHolder?.drawable != null && picture != null)
+        {
+            val uriBeweisFoto = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, picture!!)
+            uris.add(uriBeweisFoto)
+        }
+
+        val emailIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
         emailIntent.type = "vnd.android.cursor.dir/email"
         emailIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
         val to = arrayOf("boss@paderborn.de")
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Parkverstoß vom " + getEnteredTatTag() + ", " + getEnteredStrasseAdresse())
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val nachname = preferences.getString("Nachname", "")
+        val vorname = preferences.getString("Vorname", "")
+        val emailBody = "Sehr geehrte Damen und Herren,\n\n" +
+                                "Hiermit zeige ich – mit der Bitte um Weiterverfolgung durch Ihr Amt – eine Verkehrsordnungswidrigkeit an.\n\n" +
+                                "Das Formular zur Privatanzeige mitsamt Beweisfoto ist angehängt.\n\n" +
+                                "Danke, dass Sie sich durch Weiterverfolgung oben angezeigter Verkehrsordnungswidrigkeit für mehr Rücksicht, freie Wege und eine bessere Stadt einsetzen!\n\n" +
+                                "Mit freundlichen Grüßen,\n" + vorname + " " + nachname
+
+        emailIntent.putExtra(Intent.EXTRA_TEXT, emailBody)
 
         startActivity(Intent.createChooser(emailIntent, "Send email..."))
     }
