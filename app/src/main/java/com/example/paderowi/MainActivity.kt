@@ -185,6 +185,11 @@ class MainActivity : AppCompatActivity() {
         val tv = findViewById (R.id.editOWI) as TextView
         return tv.text.toString()
     }
+    
+    fun getEnteredBehinderung(): String {
+        val tv = findViewById (R.id.editBehinderung) as TextView
+        return tv.text.toString()
+    }
 
     fun getEnteredKennzeichen(): String {
         val tv = findViewById (R.id.editKennzeichen) as TextView
@@ -274,6 +279,9 @@ class MainActivity : AppCompatActivity() {
 
             val OWIfield = acroForm.getField("Text13") as PDTextField
             OWIfield.value = getEnteredOWI()
+            
+            val OWIfield = acroForm.getField("Text14") as PDTextField
+            OWIfield.value = getEnteredBehinderung()
 
             val checkbox1 = acroForm.getField("Kontrollkästchen1")
             (checkbox1 as PDCheckbox).check()
