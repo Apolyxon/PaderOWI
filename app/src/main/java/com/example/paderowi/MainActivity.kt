@@ -280,8 +280,8 @@ class MainActivity : AppCompatActivity() {
             val OWIfield = acroForm.getField("Text13") as PDTextField
             OWIfield.value = getEnteredOWI()
             
-            val OWIfield = acroForm.getField("Text14") as PDTextField
-            OWIfield.value = getEnteredBehinderung()
+            val Behinderungfield = acroForm.getField("Text14") as PDTextField
+            Behinderungfield.value = getEnteredBehinderung()
 
             val checkbox1 = acroForm.getField("Kontrollkästchen1")
             (checkbox1 as PDCheckbox).check()
